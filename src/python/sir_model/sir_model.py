@@ -122,12 +122,17 @@ def compute_sir():
     # Read in the probability of spread that was computed from variant data
     prob_spread_df = pd.read_csv('../variant/output/prob_spread.csv', parse_dates=['date'])
 
+    # Merge in the probability of spread data, which is time series data
+    # It doesn't line up perfectly, since there isn't a single value for every day
+    # So we'll merge to the closest value available
     full_df = pd.merge_asof(
         merge_df,
         prob_spread_df,
         on='date',
         tolerance=pd.Timedelta('6d'))
 
+    # Finally, we can extract the probability of contact from the R Zero value
     full_df['prob_contact'] = full_df.apply(lambda x: prob_contact(x.prob_contact_spread, x.score), axis=1)
 
+    # Output the results to a csv
     full_df.to_csv('output/full_df.csv')
