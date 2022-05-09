@@ -134,5 +134,8 @@ def compute_sir():
     # Finally, we can extract the probability of contact from the R Zero value
     full_df['prob_contact'] = full_df.apply(lambda x: prob_contact(x.prob_contact_spread, x.score), axis=1)
 
+    # 7 day moving average of probability of contact
+    full_df['prob_contact_smoothed'] = full_df.prob_contact.rolling(7, min_periods=1).mean()
+
     # Output the results to a csv
     full_df.to_csv('output/full_df.csv')
